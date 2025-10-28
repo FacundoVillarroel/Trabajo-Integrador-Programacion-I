@@ -124,8 +124,8 @@ def buscar_pais(extracto_dataset):
 
 def menu():
     extracto_dataset = leer_archivo()
-    opcion = -1
-    while opcion != 0:
+    
+    while True:
         print(separador("=", 80))
         print("MENU DE GESTION DE DATOS DE PAISES")
         print(separador("=", 80))
@@ -135,18 +135,43 @@ def menu():
         print("4. FILTRAR PAISES")
         print("5. CAMBIAR ORDEN DE PAISES")
         print("6. MOSTRAR ESTADISTICAS")
-        print("0. SALIR")
+        print("7. SALIR")
         print(separador("=", 80))
         opcion = int(input("Ingrese una opcion: "))
     
-        if opcion == 1:
-            agregar_pais(extracto_dataset)
+        match opcion:
+              # ------------------------- Opción 1 (Agregar un país) -------------------------
+            case 1:
+                agregar_pais(extracto_dataset)
 
-        if opcion ==2:
-            actualizar_pais(extracto_dataset)
+              # ------------------------- Opción 2 (Actualizar un país) -------------------------
+            case 2:
+                actualizar_pais(extracto_dataset)
 
-        if opcion == 3:
-            buscar_pais(extracto_dataset)
+              # ------------------------- Opción 3 (Buscar un país) -------------------------  
+            case 3:
+                buscar_pais(extracto_dataset)
+
+              # ------------------------- Opción 4 (Filtrar países) -------------------------  
+            case 4:
+                pass  # Implementar función de filtrar países
+            
+              # ------------------------- Opción 5 (Cambiar orden de países) -------------------------
+            case 5:
+                pass  # Implementar función de cambiar orden de países
+            
+              # ------------------------- Opción 6 (Mostrar estadísticas) -------------------------
+            case 6:
+                pass  # Implementar función de mostrar estadísticas
+            
+              # ------------------------- Opción 7 (Salir) -------------------------
+            case 7:
+                print("Saliendo del programa.")
+                break
+            
+            # ------------------------- Opción inválida -------------------------
+            case _:
+                print("Opción inválida. Por favor, ingrese opción del 1 al 7.")
 
 
 
