@@ -42,9 +42,9 @@ def comparar_strings(string1, string2):
 # apertura archivo dataset
 def leer_archivo():
     vl = []
-    with open("dataset.csv", mode="rt", encoding="utf8") as arch:        
-        arch.readline() 
-        linea = arch.readline()
+    with open("dataset.csv", mode="rt", encoding="utf8") as archivo:        
+        archivo.readline() 
+        linea = archivo.readline()
         
         while linea != "":
             linea = linea.strip()
@@ -62,9 +62,15 @@ def leer_archivo():
                 
                 vl.append(paises)
             
-            linea = arch.readline()
+            linea = archivo.readline()
             
         return vl
+    
+def guardar_archivo(paises):
+    with open("dataset.csv", "w", encoding="utf8") as archivo:
+        archivo.write("nombre,poblacion,superficie,continente\n")  # encabezado
+        for pais in paises:
+            archivo.write(f"{pais['pais']},{pais['poblacion']},{pais['superficie']},{pais['continente']}\n")
 
 # ------------------------- Opción 1 (Agregar un país) -------------------------
 def agregar_pais(extracto_dataset):
@@ -77,7 +83,7 @@ def agregar_pais(extracto_dataset):
     poblacion = input("Ingrese la población: ")
     superficie = input("Ingrese la superficie: ")
     
-    #validar que la poblacion y superficie sean enteros positivos
+    # Validar que la poblacion y superficie sean enteros positivos
     while not es_entero_positivo(poblacion):
         print("Error: La población debe ser un número entero positivo.")
         poblacion = input("Ingrese la población: ")
@@ -107,7 +113,8 @@ def agregar_pais(extracto_dataset):
     }
 
     extracto_dataset.append(nuevo_pais)
-    
+    guardar_archivo(extracto_dataset)
+
     print(separador("-", 50))
     print(f"{pais} agregado con éxito.")
     print(separador("-", 50))
@@ -118,34 +125,45 @@ def actualizar_pais(extracto_dataset):
     print("ACTUALIZAR DATOS DE POBLACION Y SUPERFICIE")
     print(separador("-", 60))
 
-    buscador = normalizar_string(input("Ingrese el nombre del pais a actualizar: "))
+    pais_a_actualizar = normalizar_string(input("Ingrese el nombre del pais a actualizar: "))
     pais_encontrado = None
     
-    
+    # Busco si el país a actualizar existe en el dataset
     for pais in extracto_dataset:
-        if pais["pais"] == buscador:
+        if comparar_strings(pais["pais"], pais_a_actualizar):
             pais_encontrado = pais
             break
 
     if pais_encontrado is None:
-        print(f"'{buscador}' no se encuentra en la base de datos.")
+        print(f"'{pais_a_actualizar}' no se encuentra en la base de datos.")
         print(separador("-", 60)) 
         return
 
-    print(f"\n Datos actuales para {buscador}:")
+    print(f"\n Datos actuales para {pais_a_actualizar}:")
     print(f"  Poblacion: {pais_encontrado['poblacion']}")
     print(f"  Superficie: {pais_encontrado['superficie']} km cuadrados")
     print(separador("*", 60))
     
-    nueva_poblacion = int(input("Ingrese la nueva población (número entero): "))
-    nueva_superficie = int(input("Ingrese la nueva superficie en km cuadrado (número entero): "))
+    nueva_poblacion = input("Ingrese la nueva población (número entero): ")
+    nueva_superficie = input("Ingrese la nueva superficie en km cuadrado (número entero): ")
+
+    # Validar que la población y superficie sean enteros positivos
+    while not es_entero_positivo(nueva_poblacion):
+        print("Error: La población debe ser un número entero positivo.")
+        nueva_poblacion = input("Ingrese la población: ")
+    
+    while not es_entero_positivo(nueva_superficie):
+        print("Error: La superficie debe ser un número entero positivo.")
+        nueva_superficie = input("Ingrese la superficie: ")
         
-    pais_encontrado["poblacion"] = nueva_poblacion
-    pais_encontrado["superficie"] = nueva_superficie
+    pais_encontrado["poblacion"] = int(nueva_poblacion)
+    pais_encontrado["superficie"] = int(nueva_superficie)
+
+    guardar_archivo(extracto_dataset)
         
     print(separador("-", 60))
-    print(f"El Pais '{buscador}' ha sido  actualizado con exito.")
-    print(f"Actualizacion: Población {nueva_poblacion}, Superficie {nueva_superficie} km cuadrado.")
+    print(f"El Pais '{pais_a_actualizar}' ha sido  actualizado con exito.")
+    print(f"Actualizacion: Población: {int(nueva_poblacion)}, Superficie: {int(nueva_superficie)} km cuadrado.")
     print(separador("-", 60))
 
 # ------------------------- Opción 3 (Buscar un país) ------------------------- 
@@ -363,31 +381,31 @@ def menu():
         opcion = pedir_opcion_numerica("Ingrese una opción (1-7): ", 1, 7)
     
         match opcion:
-              # ------------------------- Opción 1 (Agregar un país) -------------------------
+            # ------------------------- Opción 1 (Agregar un país) -------------------------
             case 1:
                 agregar_pais(extracto_dataset)
 
-              # ------------------------- Opción 2 (Actualizar un país) -------------------------
+            # ------------------------- Opción 2 (Actualizar un país) -------------------------
             case 2:
                 actualizar_pais(extracto_dataset)
 
-              # ------------------------- Opción 3 (Buscar un país) -------------------------  
+            # ------------------------- Opción 3 (Buscar un país) -------------------------  
             case 3:
                 buscar_pais(extracto_dataset)
 
-              # ------------------------- Opción 4 (Filtrar países) -------------------------  
+            # ------------------------- Opción 4 (Filtrar países) -------------------------  
             case 4:
                 filtro_menu(extracto_dataset)
             
-              # ------------------------- Opción 5 (Cambiar orden de países) -------------------------
+            # ------------------------- Opción 5 (Cambiar orden de países) -------------------------
             case 5:
                 ordenar_paises(extracto_dataset)
             
-              # ------------------------- Opción 6 (Mostrar estadísticas) -------------------------
+            # ------------------------- Opción 6 (Mostrar estadísticas) -------------------------
             case 6:
-               mostrar_estadisticas(extracto_dataset)
+                mostrar_estadisticas(extracto_dataset)
             
-              # ------------------------- Opción 7 (Salir) -------------------------
+            # ------------------------- Opción 7 (Salir) -------------------------
             case 7:
                 print("Saliendo del programa.")
                 break
