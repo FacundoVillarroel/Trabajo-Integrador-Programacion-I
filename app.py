@@ -53,7 +53,6 @@ def leer_archivo():
             
             linea = arch.readline()
             
-        arch.close()
         return vl
 
 # opcion 1: agrega un pais nuevo al dataset
@@ -124,7 +123,7 @@ def actualizar_pais(extracto_dataset):
 
     print(f"\n Datos actuales para {buscador}:")
     print(f"  Poblacion: {pais_encontrado['poblacion']}")
-    print(f"  Superficie: {pais_encontrado['superficie']} km cuadrado")
+    print(f"  Superficie: {pais_encontrado['superficie']} km cuadrados")
     print(separador("*", 60))
     
     nueva_poblacion = int(input("Ingrese la nueva población (número entero): "))
@@ -165,6 +164,130 @@ def buscar_pais(extracto_dataset):
         print(f"  Superficie:   {pais_encontrado['superficie']:,} km cuadrado")
         print(f"  Continente:   {pais_encontrado['continente']}")
 
+#Opcion 4: Lista por filtro
+def filtrar_por_criterio(extracto_dataset, criterio, minimo=None, maximo=None):
+    filtrado = []
+    
+    if extracto_dataset:
+        print(separador("=", 60))
+        print(f"RESULTADO DEL FILTRO: {criterio}")
+        print(separador("=", 60))
+
+        for pais in extracto_dataset:
+            incluir = False
+            
+            # filtro  1: Continente
+            if criterio == "continente":
+                if comparar_strings(pais["continente"],minimo): 
+                    incluir = True
+
+            # filtro 2: Rango de Poblacion
+            elif criterio == "poblacion":
+                poblacion = pais["poblacion"]
+                if minimo <= poblacion <= maximo:
+                    incluir = True
+
+            # filtro 3: Rango de Superficie
+            elif criterio == "superficie":
+                superficie = pais["superficie"]
+                if minimo <= superficie <= maximo:
+                    incluir = True
+
+            if incluir:
+                filtrado.append(pais)
+
+        if filtrado:
+            for pais in filtrado:
+                print(f"Pais: {pais['pais']}, Continente: {pais['continente']}, Poblacion: {pais['poblacion']:,}, Superficie: {pais['superficie']:,} km cuadrados ")
+        else:
+            print("No coincide con los datos en nuestra dataset o ha sido mal escrito.")
+        
+        print(separador("*", 60))
+
+
+def filtro_menu(extracto_dataset):
+    
+    print(separador("-", 60))
+    print("SELECCIONE UN TIPO DE FILTRO:")
+    print("1. Por Continente")
+    print("2. Por Rango de Población")
+    print("3. Por Rango de Superficie")
+    print(separador("-", 60))
+    opcion_filtro = -1
+    opcion_filtro = int(input("Ingrese una opción (1, 2 o 3): "))
+    #opciones de filtro
+    if opcion_filtro == 1:
+        continente = normalizar_string(input("Ingrese el nombre del continente (America, Europa, Asia, Oceania, Africa, Antartida): "))
+        if continente:
+            filtrar_por_criterio(extracto_dataset, "continente", minimo=continente)
+        else:
+            print("Error en el continente ingresado o no existente en el dataset")
+
+    elif opcion_filtro == 2:
+            min_pob = int(input("Ingrese el rango minimo de poblacion a filtrar: "))
+            max_pob = int(input("Ingrese el rango maximo de poblacion a filtrar: "))
+            if min_pob <= max_pob:
+                filtrar_por_criterio(extracto_dataset, "poblacion", minimo=min_pob, maximo=max_pob)
+            else:
+                print("El valor mínimo de población no puede ser mayor al máximo.")
+
+
+    elif opcion_filtro == 3:
+            min_sup = int(input("Ingrese el rango minimo de superficie en km cuadrado a filtrar: "))
+            max_sup = int(input("Ingrese el rango maximo de superficie en km cuadrado a filtrar: "))
+            if min_sup <= max_sup:
+                filtrar_por_criterio(extracto_dataset, "superficie", minimo=min_sup, maximo=max_sup)
+            else:
+                print("El valor mínimo de superficie no puede ser mayor al máximo.")
+    else:
+        print("Opción de filtro no reconocida.")
+
+#OPCIÓN 6: Estadisticas
+def mostrar_estadisticas(extracto_dataset):
+    print(separador("=", 60))
+    print("RESUMEN ESTADISTICO DE PAISES")
+    print(separador("=", 60))
+
+
+#Sublista ordenada por cantidad de poblacion
+    lista_ordenada_por_pob = sorted(
+        extracto_dataset, 
+        key=lambda pais: pais['poblacion'])
+    
+    pais_menor_pob = lista_ordenada_por_pob[0]
+    pais_mayor_pob = lista_ordenada_por_pob[-1]
+    print(f" Pais con menor poblacion: {pais_menor_pob['pais']} ({pais_menor_pob['poblacion']:,} habitantes.)")
+    print(f" Pais con mayor poblacion: {pais_mayor_pob['pais']} ({pais_mayor_pob['poblacion']:,} habitantes.)")
+    total_poblacion = 0
+    total_superficie = 0
+    cantidad_paises = len(extracto_dataset)
+    paises_por_continente = {} 
+    for pais in extracto_dataset:
+        total_poblacion += pais['poblacion']
+        total_superficie += pais['superficie']
+        continente = pais['continente']
+        paises_por_continente[continente] = paises_por_continente.get(continente, 0) + 1
+
+#promedios
+    promedio_poblacion = total_poblacion / cantidad_paises
+    promedio_superficie = total_superficie / cantidad_paises
+
+    print(separador("-", 60))
+    print("Promedios:")
+    print(f"Promedio de Poblacion:  {promedio_poblacion:,.0f} habitantes")
+    print(f"Promedio de Superficie: {promedio_superficie:,.2f} km cuadrados")
+    
+    print(separador("-", 60))
+    print("Cantidad de Paises por Continente:")
+    
+    for continente in paises_por_continente:
+        cantidad = paises_por_continente[continente]
+        print(f"  {continente}: {cantidad} paises")
+
+
+    print(separador("=", 60))
+
+
 def menu():
     extracto_dataset = leer_archivo()
     
@@ -197,7 +320,7 @@ def menu():
 
               # ------------------------- Opción 4 (Filtrar países) -------------------------  
             case 4:
-                pass  # Implementar función de filtrar países
+                filtro_menu(extracto_dataset)
             
               # ------------------------- Opción 5 (Cambiar orden de países) -------------------------
             case 5:
@@ -205,7 +328,7 @@ def menu():
             
               # ------------------------- Opción 6 (Mostrar estadísticas) -------------------------
             case 6:
-                pass  # Implementar función de mostrar estadísticas
+               mostrar_estadisticas(extracto_dataset)
             
               # ------------------------- Opción 7 (Salir) -------------------------
             case 7:
