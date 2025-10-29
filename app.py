@@ -18,6 +18,17 @@ def es_entero_positivo(valor):
     else:
         return False
     
+# Pedir y validar una opción del menú
+def pedir_opcion_numerica(texto, opcion_minima, opcion_maxima):
+    while True:
+        opcion = input(texto)
+        if opcion.isdigit():
+            opcion_int = int(opcion)
+            # Verificar si la opción está dentro del rango válido
+            if opcion_minima <= opcion_int <= opcion_maxima:
+                return opcion_int
+        print(f"Error: Ingrese un número entre {opcion_minima} y {opcion_maxima}.")
+    
 # Normalizar string: elimina espacios extras, convierte a minúsculas y luego a título
 def normalizar_string(texto):
     texto_minuscula= texto.strip().lower()
@@ -213,8 +224,7 @@ def filtro_menu(extracto_dataset):
     print("2. Por Rango de Población")
     print("3. Por Rango de Superficie")
     print(separador("-", 60))
-    opcion_filtro = -1
-    opcion_filtro = int(input("Ingrese una opción (1, 2 o 3): "))
+    opcion_filtro = pedir_opcion_numerica("Ingrese una opción (1, 2 o 3): ", 1, 3)
     #opciones de filtro
     if opcion_filtro == 1:
         continente = normalizar_string(input("Ingrese el nombre del continente (America, Europa, Asia, Oceania, Africa, Antartida): "))
@@ -242,11 +252,7 @@ def filtro_menu(extracto_dataset):
     else:
         print("Opción de filtro no reconocida.")
 
-#OPCIÓN 6: Estadisticas
-def mostrar_estadisticas(extracto_dataset):
-    print(separador("=", 60))
-    print("RESUMEN ESTADISTICO DE PAISES")
-    print(separador("=", 60))
+
 
 
 #Sublista ordenada por cantidad de poblacion
@@ -303,7 +309,8 @@ def menu():
         print("6. MOSTRAR ESTADÍSTICAS")
         print("7. SALIR")
         print(separador("=", 80))
-        opcion = int(input("Ingrese una opcion: "))
+
+        opcion = pedir_opcion_numerica("Ingrese una opción (1-7): ", 1, 7)
     
         match opcion:
               # ------------------------- Opción 1 (Agregar un país) -------------------------
@@ -324,7 +331,8 @@ def menu():
             
               # ------------------------- Opción 5 (Cambiar orden de países) -------------------------
             case 5:
-                pass  # Implementar función de cambiar orden de países
+                #mostrar_paises_ordenados(extracto_dataset)
+                pass
             
               # ------------------------- Opción 6 (Mostrar estadísticas) -------------------------
             case 6:
