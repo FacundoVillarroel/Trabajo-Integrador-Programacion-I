@@ -66,7 +66,7 @@ def leer_archivo():
             
         return vl
 
-# opcion 1: agrega un pais nuevo al dataset
+# ------------------------- Opción 1 (Agregar un país) -------------------------
 def agregar_pais(extracto_dataset):
     print(separador("-", 50))
     print("AGREGAR UN NUEVO PAIS")
@@ -112,7 +112,7 @@ def agregar_pais(extracto_dataset):
     print(f"{pais} agregado con éxito.")
     print(separador("-", 50))
 
-#Opcion 2: actualizar pais del dataset
+# ------------------------- Opción 2 (Actualizar un país) -------------------------
 def actualizar_pais(extracto_dataset):
     print(separador("-", 60))
     print("ACTUALIZAR DATOS DE POBLACION Y SUPERFICIE")
@@ -148,7 +148,7 @@ def actualizar_pais(extracto_dataset):
     print(f"Actualizacion: Población {nueva_poblacion}, Superficie {nueva_superficie} km cuadrado.")
     print(separador("-", 60))
 
-#opcion 3: busqueda de pais en listado        
+# ------------------------- Opción 3 (Buscar un país) ------------------------- 
 def buscar_pais(extracto_dataset):
     print(separador("-", 60))
     print("BUSCAR PAIS POR NOMBRE")
@@ -175,7 +175,7 @@ def buscar_pais(extracto_dataset):
         print(f"  Superficie:   {pais_encontrado['superficie']:,} km cuadrado")
         print(f"  Continente:   {pais_encontrado['continente']}")
 
-#Opcion 4: Lista por filtro
+# ------------------------- Opción 4 (Filtrar países) -------------------------
 def filtrar_por_criterio(extracto_dataset, criterio, minimo=None, maximo=None):
     filtrado = []
     
@@ -252,7 +252,57 @@ def filtro_menu(extracto_dataset):
     else:
         print("Opción de filtro no reconocida.")
 
+# ------------------------- Opción 5 (Cambiar orden de países) -------------------------
+def mostrar_paises_ordenados(extracto_dataset, clave, reverso=False):
 
+    def obtener_valor(pais):
+        return pais[clave]
+    
+    paises_ordenados = sorted(extracto_dataset, key=obtener_valor, reverse=reverso)
+
+    orden = "ASCENDENTE"
+    if reverso:
+        orden = "DESCENDENTE"
+
+    print(separador("=", 60))
+    print(f"PAISES ORDENADOS POR {clave.upper()} {orden}")
+    print(separador("=", 60))
+    for pais in paises_ordenados:
+        print(f"Pais: {pais['pais']}, Continente: {pais['continente']}, Poblacion: {pais['poblacion']:,}, Superficie: {pais['superficie']:,} km cuadrados ")
+            
+
+def ordenar_paises(extracto_dataset):
+    print(separador("-", 60))
+    print("ORDENAR PAISES POR CRITERIO")
+    print(separador("-", 60))
+
+    print("Criterios de ordenamiento disponibles:")
+    print("1. Nombre del País")
+    print("2. Poblacion")
+    print("3. Superficie")
+
+    opcion_orden = pedir_opcion_numerica("Seleccione un criterio de ordenamiento (1, 2 o 3): ", 1, 3)
+    reverso = pedir_opcion_numerica("Seleccione el orden: 1. Ascendente  2. Descendente : ", 1, 2) == 2 # Comparo con 2 para obtener True si es descendente o False si es ascendente
+
+    match opcion_orden:
+        case 1:
+            clave = "pais"
+            mostrar_paises_ordenados(extracto_dataset, clave, reverso)
+        case 2:
+            clave = "poblacion"
+            mostrar_paises_ordenados(extracto_dataset, clave, reverso)
+        case 3:
+            clave = "superficie"
+            mostrar_paises_ordenados(extracto_dataset, clave, reverso)
+        case _:
+            print("Opción inválida. Volviendo al menú principal.")
+
+
+# ------------------------- Opción 6 (Mostrar estadísticas) -------------------------
+def mostrar_estadisticas(extracto_dataset):
+    print(separador("=", 60))
+    print("RESUMEN ESTADISTICO DE PAISES")
+    print(separador("=", 60))
 
 
 #Sublista ordenada por cantidad de poblacion
@@ -331,8 +381,7 @@ def menu():
             
               # ------------------------- Opción 5 (Cambiar orden de países) -------------------------
             case 5:
-                #mostrar_paises_ordenados(extracto_dataset)
-                pass
+                ordenar_paises(extracto_dataset)
             
               # ------------------------- Opción 6 (Mostrar estadísticas) -------------------------
             case 6:
