@@ -10,6 +10,16 @@ def separador(car, cant):
 def existe_archivo(nombre_archivo):
     return os.path.isfile(nombre_archivo)
 
+# Crea el archivo con el nombre y lista de paises que se le pase, si la lista está vacía, crea archivo solo con los encabezados.
+def crear_archivo(nombre_archivo, lista_paises=None):
+    with open(nombre_archivo,"w", encoding="utf8") as archivo:
+        archivo.write("nombre,poblacion,superficie,continente\n")
+        if lista_paises is None:
+            pass
+        else: 
+            for pais in lista_paises:
+                archivo.write(f"{pais['pais']},{pais['poblacion']},{pais['superficie']},{pais['continente']}\n")
+    
 # Verifica si el valor es un entero positivo
 def es_entero_positivo(valor):
     if valor.isdigit():
@@ -28,7 +38,15 @@ def pedir_opcion_numerica(texto, opcion_minima, opcion_maxima):
             if opcion_minima <= opcion_int <= opcion_maxima:
                 return opcion_int
         print(f"Error: Ingrese un número entre {opcion_minima} y {opcion_maxima}.")
-    
+
+#Pedir y validar y retornar entero positivo
+def pedir_entero_positivo(mensaje):
+    while True:
+        valor = input(mensaje)
+        if es_entero_positivo(valor):
+            return int(valor)
+        print("Error: debe ingresar un número entero positivo.") 
+
 # Normalizar string: elimina espacios extras, convierte a minúsculas y luego a título
 def normalizar_string(texto):
     texto_minuscula= texto.strip().lower()
@@ -41,9 +59,9 @@ def comparar_strings(string1, string2):
 
 # apertura archivo dataset
 def leer_archivo():
-    vl = []
-    with open("dataset.csv", mode="rt", encoding="utf8") as archivo:        
-        archivo.readline() 
+    lista_paises = []
+    with open("dataset.csv", "r", encoding="utf8") as archivo:        
+        archivo.readline() # Omitimos el encabezado
         linea = archivo.readline()
         
         while linea != "":
@@ -60,11 +78,11 @@ def leer_archivo():
                     "continente": datos[3]
                 }
                 
-                vl.append(paises)
+                lista_paises.append(paises)
             
             linea = archivo.readline()
             
-        return vl
+        return lista_paises
     
 def guardar_archivo(paises):
     with open("dataset.csv", "w", encoding="utf8") as archivo:
@@ -80,17 +98,8 @@ def agregar_pais(extracto_dataset):
 
     pais = normalizar_string(input("Ingrese el nombre del pais: "))
     continente = normalizar_string(input("Ingrese el continente: "))
-    poblacion = input("Ingrese la población: ")
-    superficie = input("Ingrese la superficie: ")
-    
-    # Validar que la poblacion y superficie sean enteros positivos
-    while not es_entero_positivo(poblacion):
-        print("Error: La población debe ser un número entero positivo.")
-        poblacion = input("Ingrese la población: ")
-    
-    while not es_entero_positivo(superficie):
-        print("Error: La superficie debe ser un número entero positivo.")
-        superficie = input("Ingrese la superficie: ")
+    poblacion = pedir_entero_positivo("Ingrese la población: ")
+    superficie = pedir_entero_positivo("Ingrese la superficie: ")
     
     # Verificar si el país ya existe en el dataset
     for pais_existente in extracto_dataset:
@@ -144,17 +153,8 @@ def actualizar_pais(extracto_dataset):
     print(f"  Superficie: {pais_encontrado['superficie']} km cuadrados")
     print(separador("*", 60))
     
-    nueva_poblacion = input("Ingrese la nueva población (número entero): ")
-    nueva_superficie = input("Ingrese la nueva superficie en km cuadrado (número entero): ")
-
-    # Validar que la población y superficie sean enteros positivos
-    while not es_entero_positivo(nueva_poblacion):
-        print("Error: La población debe ser un número entero positivo.")
-        nueva_poblacion = input("Ingrese la población: ")
-    
-    while not es_entero_positivo(nueva_superficie):
-        print("Error: La superficie debe ser un número entero positivo.")
-        nueva_superficie = input("Ingrese la superficie: ")
+    nueva_poblacion = pedir_entero_positivo("Ingrese la nueva población (número entero): ")
+    nueva_superficie = pedir_entero_positivo("Ingrese la nueva superficie en km cuadrado (número entero): ")
         
     pais_encontrado["poblacion"] = int(nueva_poblacion)
     pais_encontrado["superficie"] = int(nueva_superficie)
@@ -322,7 +322,10 @@ def mostrar_estadisticas(extracto_dataset):
     print("RESUMEN ESTADISTICO DE PAISES")
     print(separador("=", 60))
 
-
+    if not extracto_dataset:
+        print("No hay datos cargados para mostrar estadísticas.")
+        return
+    
 #Sublista ordenada por cantidad de poblacion
     lista_ordenada_por_pob = sorted(
         extracto_dataset, 
@@ -363,7 +366,13 @@ def mostrar_estadisticas(extracto_dataset):
 
 
 def menu():
-    extracto_dataset = leer_archivo()
+    extracto_dataset = []
+
+    # Si existe el archivo se carga en extracto_dataset sino se crea un archivo nuevo.
+    if existe_archivo("dataset.csv"):
+        extracto_dataset = leer_archivo()
+    else: 
+        crear_archivo("dataset.csv")
     
     while True:
         print(separador("=", 80))
