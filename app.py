@@ -172,26 +172,25 @@ def buscar_pais(extracto_dataset):
     print("BUSCAR PAIS POR NOMBRE")
     print(separador("-", 60))
 
-    busqueda = normalizar_string(input("Ingrese el nombre del pais que desea buscar: "))
+    busqueda = normalizar_string(input("Ingrese el nombre del pais que desea buscar: ")).lower()
     
-    pais_encontrado = None
-    
+    paises_encontrados = []
     
     for pais in extracto_dataset:
-        if pais["pais"] == busqueda:
-            pais_encontrado = pais
-            break 
+        if busqueda in pais["pais"].lower():
+            paises_encontrados.append(pais)
 
     
-    if pais_encontrado is None:
-        print(f"no existe '{busqueda}' en la dataset o ha sido mal escrito.")
+    if len(paises_encontrados) == 0:
+        print(f"no existe '{busqueda}' en la base de datos.")
     else:
-        # Se encontró el país, se muestran sus datos
-        print(separador("*", 60))
-        print(f" Pais encontrado: {pais_encontrado['pais']}")
-        print(f"  Población:    {pais_encontrado['poblacion']:,} habitantes")
-        print(f"  Superficie:   {pais_encontrado['superficie']:,} km cuadrado")
-        print(f"  Continente:   {pais_encontrado['continente']}")
+        # Se encontraron paises, se muestran sus datos
+        for pais_encontrado in paises_encontrados:
+            print(separador("*", 60))
+            print(f" Pais encontrado: {pais_encontrado['pais']}")
+            print(f"  Población:    {pais_encontrado['poblacion']:,} habitantes")
+            print(f"  Superficie:   {pais_encontrado['superficie']:,} km cuadrados")
+            print(f"  Continente:   {pais_encontrado['continente']}")
 
 # ------------------------- Opción 4 (Filtrar países) -------------------------
 def filtrar_por_criterio(extracto_dataset, criterio, minimo=None, maximo=None):
