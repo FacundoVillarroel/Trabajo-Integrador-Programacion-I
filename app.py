@@ -18,7 +18,7 @@ def crear_archivo(nombre_archivo, lista_paises=None):
             pass
         else: 
             for pais in lista_paises:
-                archivo.write(f"{pais['pais']},{pais['poblacion']},{pais['superficie']},{pais['continente']}\n")
+                archivo.write(f"{pais['nombre']},{pais['poblacion']},{pais['superficie']},{pais['continente']}\n")
     
 # Verifica si el valor es un entero positivo
 def es_entero_positivo(valor):
@@ -72,7 +72,7 @@ def leer_archivo():
             if len(datos) >= 4:
                 
                 paises = {
-                    "pais": datos[0],
+                    "nombre": datos[0],
                     "poblacion": int(datos[1]),
                     "superficie": int(datos[2]),
                     "continente": datos[3]
@@ -88,7 +88,7 @@ def guardar_archivo(paises):
     with open("dataset.csv", "w", encoding="utf8") as archivo:
         archivo.write("nombre,poblacion,superficie,continente\n")  # encabezado
         for pais in paises:
-            archivo.write(f"{pais['pais']},{pais['poblacion']},{pais['superficie']},{pais['continente']}\n")
+            archivo.write(f"{pais['nombre']},{pais['poblacion']},{pais['superficie']},{pais['continente']}\n")
 
 # ------------------------- Opción 1 (Agregar un país) -------------------------
 def agregar_pais(extracto_dataset):
@@ -96,26 +96,26 @@ def agregar_pais(extracto_dataset):
     print("AGREGAR UN NUEVO PAIS")
     print(separador("-", 50))
 
-    pais = normalizar_string(input("Ingrese el nombre del pais: "))
+    nombre_pais = normalizar_string(input("Ingrese el nombre del pais: "))
     continente = normalizar_string(input("Ingrese el continente: "))
     poblacion = pedir_entero_positivo("Ingrese la población: ")
     superficie = pedir_entero_positivo("Ingrese la superficie: ")
     
     # Verificar si el país ya existe en el dataset
     for pais_existente in extracto_dataset:
-        if comparar_strings(pais_existente["pais"], pais):
-            print(f"El país '{pais}' ya existe en la base de datos. No se puede agregar duplicados.")
+        if comparar_strings(pais_existente["nombre"], nombre_pais):
+            print(f"El país '{nombre_pais}' ya existe en la base de datos. No se puede agregar duplicados.")
             print(separador("-", 50))
             return # Salir de la función si el país ya existe para que no lo agregue nuevamente
         
     # Verificar que todos los campos estén completos
-    if not pais or not continente or not poblacion or not superficie:
+    if not nombre_pais or not continente or not poblacion or not superficie:
         print("Error: Todos los campos son obligatorios, no puede haber ninguno vacío.")
         print(separador("-", 50))
         return
     
     nuevo_pais = {
-        "pais": pais,
+        "nombre": nombre_pais,
         "poblacion": int(poblacion),
         "superficie": int(superficie),
         "continente": continente
@@ -125,7 +125,7 @@ def agregar_pais(extracto_dataset):
     guardar_archivo(extracto_dataset)
 
     print(separador("-", 50))
-    print(f"{pais} agregado con éxito.")
+    print(f"{nombre_pais} agregado con éxito.")
     print(separador("-", 50))
 
 # ------------------------- Opción 2 (Actualizar un país) -------------------------
@@ -139,7 +139,7 @@ def actualizar_pais(extracto_dataset):
     
     # Busco si el país a actualizar existe en el dataset
     for pais in extracto_dataset:
-        if comparar_strings(pais["pais"], pais_a_actualizar):
+        if comparar_strings(pais["nombre"], pais_a_actualizar):
             pais_encontrado = pais
             break
 
@@ -177,7 +177,7 @@ def buscar_pais(extracto_dataset):
     paises_encontrados = []
     
     for pais in extracto_dataset:
-        if busqueda in pais["pais"].lower():
+        if busqueda in pais["nombre"].lower():
             paises_encontrados.append(pais)
 
     
@@ -187,7 +187,7 @@ def buscar_pais(extracto_dataset):
         # Se encontraron paises, se muestran sus datos
         for pais_encontrado in paises_encontrados:
             print(separador("*", 60))
-            print(f" Pais encontrado: {pais_encontrado['pais']}")
+            print(f" Pais encontrado: {pais_encontrado['nombre']}")
             print(f"  Población:    {pais_encontrado['poblacion']:,} habitantes")
             print(f"  Superficie:   {pais_encontrado['superficie']:,} km cuadrados")
             print(f"  Continente:   {pais_encontrado['continente']}")
@@ -226,7 +226,7 @@ def filtrar_por_criterio(extracto_dataset, criterio, minimo=None, maximo=None):
 
         if filtrado:
             for pais in filtrado:
-                print(f"Pais: {pais['pais']}, Continente: {pais['continente']}, Poblacion: {pais['poblacion']:,}, Superficie: {pais['superficie']:,} km cuadrados ")
+                print(f"Pais: {pais['nombre']}, Continente: {pais['continente']}, Poblacion: {pais['poblacion']:,}, Superficie: {pais['superficie']:,} km cuadrados ")
         else:
             print("No coincide con los datos en nuestra dataset o ha sido mal escrito.")
         
@@ -285,7 +285,7 @@ def mostrar_paises_ordenados(extracto_dataset, clave, reverso=False):
     print(f"PAISES ORDENADOS POR {clave.upper()} {orden}")
     print(separador("=", 60))
     for pais in paises_ordenados:
-        print(f"Pais: {pais['pais']}, Continente: {pais['continente']}, Poblacion: {pais['poblacion']:,}, Superficie: {pais['superficie']:,} km cuadrados ")
+        print(f"Pais: {pais['nombre']}, Continente: {pais['continente']}, Poblacion: {pais['poblacion']:,}, Superficie: {pais['superficie']:,} km cuadrados ")
             
 
 def ordenar_paises(extracto_dataset):
@@ -303,7 +303,7 @@ def ordenar_paises(extracto_dataset):
 
     match opcion_orden:
         case 1:
-            clave = "pais"
+            clave = "nombre"
             mostrar_paises_ordenados(extracto_dataset, clave, reverso)
         case 2:
             clave = "poblacion"
@@ -332,8 +332,8 @@ def mostrar_estadisticas(extracto_dataset):
     
     pais_menor_pob = lista_ordenada_por_pob[0]
     pais_mayor_pob = lista_ordenada_por_pob[-1]
-    print(f" Pais con menor poblacion: {pais_menor_pob['pais']} ({pais_menor_pob['poblacion']:,} habitantes.)")
-    print(f" Pais con mayor poblacion: {pais_mayor_pob['pais']} ({pais_mayor_pob['poblacion']:,} habitantes.)")
+    print(f" Pais con menor poblacion: {pais_menor_pob['nombre']} ({pais_menor_pob['poblacion']:,} habitantes.)")
+    print(f" Pais con mayor poblacion: {pais_mayor_pob['nombre']} ({pais_mayor_pob['poblacion']:,} habitantes.)")
     total_poblacion = 0
     total_superficie = 0
     cantidad_paises = len(extracto_dataset)
