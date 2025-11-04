@@ -171,7 +171,7 @@ def buscar_pais(extracto_dataset):
     print("BUSCAR PAIS POR NOMBRE")
     print(separador("-", 60))
 
-    busqueda = normalziar_string(input("Ingrese el nombre del pais que desea buscar: ")).lower()
+    busqueda = normalizar_string(input("Ingrese el nombre del pais que desea buscar: ")).lower()
     
     paises_encontrados = []
     
