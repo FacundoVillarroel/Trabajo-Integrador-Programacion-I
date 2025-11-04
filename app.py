@@ -1,10 +1,9 @@
 import os
 
+# Funciones de ayuda
 
 def separador(car, cant):
     return car * cant
-
-# Funciones de ayuda
 
 # Verifica si el archivo existe devuelve True si existe, False si no
 def existe_archivo(nombre_archivo):
